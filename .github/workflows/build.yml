@@ -1,0 +1,21 @@
+name: build
+on:
+  push:
+    branches:
+    - main
+jobs:
+  build:
+    if: >
+      !contains(github.event.head_commit.message, '#skip-ci')
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build and push to Registry
+      uses: elgohr/Publish-Docker-Github-Action@v5
+      with:
+        name: ${{ github.event.repository.full_name }}
+        username: ${{ github.actor }}
+        password: ${{ github.token }}
+        registry: ghcr.io
+        tags: latest
+        cache: ${{ !contains(github.event.head_commit.message, '#no-cache') }}

@@ -1479,7 +1479,11 @@ class ElectrumX(SessionBase):
             raise RPCError(BAD_REQUEST, '"verbose" must be a boolean')
 
         self.bump_cost(1.0)
-        return await self.daemon_request('getrawtransaction', tx_hash, verbose)
+        result = await self.daemon_request('getrawtransaction', tx_hash, verbose)
+        if verbose is True:
+            del result['vin']
+            del result['vout']
+        return result
 
     async def transaction_merkle(self, tx_hash, height):
         '''Return the merkle branch to a confirmed transaction given its hash
